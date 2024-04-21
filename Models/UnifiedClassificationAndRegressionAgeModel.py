@@ -47,7 +47,7 @@ class FeatureExtractionVgg16(nn.Module):
 
 		recog_model = ArcMarginClassifier(10976)
 		pretrained_model_path = 'weights'
-		pretrained_model_file = os.path.join(pretrained_model_path, "vgg16.pt")
+		pretrained_model_file = os.path.join(pretrained_model_path, "vgg_16.pt")
 		recog_model.load_state_dict(torch.load(pretrained_model_file), strict=False)
 
 		self.base_net = recog_model.base_net

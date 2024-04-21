@@ -14,7 +14,7 @@ from Datasets.UTKFace.DataParser import DataParser
 from Datasets.UTKFace.UTKFaceClassifierDataset import UTKFaceClassifierDataset
 from Losses.MeanVarianceLoss import MeanVarianceLoss
 from Models.JoinedTransformerModel import JoinedTransformerModel
-from Models.UnifiedClassificaionAndRegressionAgeModel import UnifiedClassificaionAndRegressionAgeModel
+from Models.UnifiedClassificationAndRegressionAgeModel import UnifiedClassificationAndRegressionAgeModel
 from Models.transformer import *
 from Models.unified_transformer_model import AgeTransformer
 from Optimizers.RangerLars import RangerLars
@@ -23,7 +23,7 @@ from Training.train_unified_model_iter import train_unified_model_iter
 
 
 def get_age_transformer(device, num_classes, age_interval, min_age, max_age, mid_feature_size):
-	pretrained_model = UnifiedClassificaionAndRegressionAgeModel(7, 10, 15, 80)
+	pretrained_model = UnifiedClassificationAndRegressionAgeModel(7, 10, 15, 80)
 	pretrained_model_path = 'weights'
 
 	pretrained_model_file = os.path.join(pretrained_model_path, "unified_class_and_regress.pt")
@@ -45,8 +45,6 @@ def get_age_transformer(device, num_classes, age_interval, min_age, max_age, mid
 
 	return age_transformer
 
-
-def get_joined_model(device, num_classes, age_interval, min_age, max_age, mid_feature_size):
 	model = JoinedTransformerModel(num_classes, age_interval, min_age, max_age, device, mid_feature_size)
 	model.to(device)
 	model.train()
@@ -77,7 +75,7 @@ if __name__ == "__main__":
 
 	num_classes = int((max_age - min_age) / age_interval + 1)
 
-	data_parser = DataParser('./Datasets/APPA_REAL/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
+	data_parser = DataParser('./Datasets/aligned_dataset.hdf5')
 	data_parser.initialize_data()
 
 	x_train, y_train, x_test, y_test = data_parser.x_train,	data_parser.y_train, data_parser.x_test, data_parser.y_test,
@@ -175,9 +173,6 @@ if __name__ == "__main__":
 		total_epoch=10000,
 		after_scheduler=cosine_scheduler
 	)
-
-	### Train ###
-	writer = SummaryWriter('logs/train')
 
 	model_path = 'weights/'
 	if not os.path.exists(model_path):
