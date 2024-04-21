@@ -24,20 +24,15 @@ from Training.train_unified_model_iter import train_unified_model_iter
 
 def get_age_transformer(device, num_classes, age_interval, min_age, max_age, mid_feature_size):
 	pretrained_model = UnifiedClassificaionAndRegressionAgeModel(7, 10, 15, 80)
-	pretrained_model_path = 'weights/UTKFace/unified/RangerLars_lr_5e4_4096_epochs_60_batch_32_mean_var_vgg16_pretrained_recognition_bin_10_more_augs_RandomApply_warmup_cosine_recreate'
-	# pretrained_model = UnifiedClassificaionAndRegressionAgeModel(4, 8, 12, 43)
-	# pretrained_model_path = 'weights/UTKFace/unified/iter/RangerLars_lr_1e3_4096_epochs_60_batch_32_vgg16_warmup_10k_cosine_bin_8_stronger_augs_2'
+	pretrained_model_path = 'weights'
 
-	pretrained_model_file = os.path.join(pretrained_model_path, "weights.pt")
+	pretrained_model_file = os.path.join(pretrained_model_path, "unified_class_and_regress.pt")
 	pretrained_model.load_state_dict(torch.load(pretrained_model_file), strict=False)
 
 	num_features = pretrained_model.num_features
 	backbone = pretrained_model.base_net
 	backbone.train()
 	backbone.to(device)
-
-	# backbone = InceptionResnetV1(pretrained='vggface2')
-	# num_features = 512
 
 	transformer = TransformerModel(
 		age_interval, min_age, max_age,
@@ -71,16 +66,10 @@ if __name__ == "__main__":
 
 	torch.backends.cudnn.benchmark = True
 
-	UTKFace
-
 	min_age = 1
 	max_age = 100
 	age_interval = 1 
-	# min_age = 12 
-	# max_age = 43 
-	# age_interval = 8  # UTKFace
 	batch_size = 8
-	# num_epochs = 60
 	num_iters = int(1.5e5)
 	random_split = True
 	num_copies = 10
@@ -88,8 +77,7 @@ if __name__ == "__main__":
 
 	num_classes = int((max_age - min_age) / age_interval + 1)
 
-	# Load data
-	data_parser = DataParser('./Datasets/UTKFace/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
+	data_parser = DataParser('./Datasets/APPA_REAL/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
 	data_parser.initialize_data()
 
 	x_train, y_train, x_test, y_test = data_parser.x_train,	data_parser.y_train, data_parser.x_test, data_parser.y_test,
@@ -100,7 +88,7 @@ if __name__ == "__main__":
 
 		x_train, x_test, y_train, y_test = train_test_split(all_images, all_labels, test_size=0.20, random_state=42)
 
-	train_ds = UTKFaceClassifierDataset(
+	train_ds = ARClassifierDataset(
 		x_train,
 		y_train,
 		min_age,
@@ -128,7 +116,7 @@ if __name__ == "__main__":
 		copies=num_copies
 	)
 
-	test_ds = UTKFaceClassifierDataset(
+	test_ds = ARClassifierDataset(
 		x_test,
 		y_test,
 		min_age,
@@ -156,62 +144,6 @@ if __name__ == "__main__":
 		copies=num_copies
 	)
 
-	# train_ds = UTKFaceClassifierDataset(
-	# './Datasets/UTKFace/aligned_data/UTKFace_train.h5',
-	# min_age=min_age,
-	# max_age=max_age,
-	# age_interval=age_interval,
-	# 	transform=transforms.Compose([
-	# 		transforms.RandomResizedCrop(224, (0.9, 1.0)),
-	# 		transforms.RandomHorizontalFlip(),
-	# 		transforms.RandomApply([transforms.ColorJitter(
-	# 			brightness=0.2,
-	# 			contrast=0.2,
-	# 			saturation=0.2,
-	# 			hue=0.2
-	# 		)], p=0.5),
-	# 		transforms.RandomApply([transforms.RandomAffine(
-	# 			degrees=20,
-	# 			translate=(0.2, 0.2),
-	# 			scale=(0.8, 1.2),
-	# 			shear=10,
-	# 			resample=Image.BICUBIC
-	# 		)], p=0.5),
-	# 		transforms.ToTensor(),
-	# 		transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-	# 		transforms.RandomErasing(p=0.5)
-	# 	]),
-	# 	copies=num_copies
-	# )
-	#
-	# test_ds = UTKFaceClassifierDataset(
-	# 	'./Datasets/UTKFace/aligned_data/UTKFace_test.h5',
-	# 	min_age=min_age,
-	# 	max_age=max_age,
-	# 	age_interval=age_interval,
-	# 	transform=transforms.Compose([
-	# 		transforms.RandomResizedCrop(224, (0.9, 1.0)),
-	# 		transforms.RandomHorizontalFlip(),
-	# 		transforms.RandomApply([transforms.ColorJitter(
-	# 			brightness=0.2,
-	# 			contrast=0.2,
-	# 			saturation=0.2,
-	# 			hue=0.2
-	# 		)], p=0.5),
-	# 		transforms.RandomApply([transforms.RandomAffine(
-	# 			degrees=20,
-	# 			translate=(0.2, 0.2),
-	# 			scale=(0.8, 1.2),
-	# 			shear=10,
-	# 			resample=Image.BICUBIC
-	# 		)], p=0.5),
-	# 		transforms.ToTensor(),
-	# 		transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-	# 		transforms.RandomErasing(p=0.5)
-	# 	]),
-	# 	copies=num_copies
-	# )
-
 	image_datasets = {
 		'train': train_ds,
 		'val': test_ds
@@ -223,9 +155,7 @@ if __name__ == "__main__":
 	}
 	dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 
-	# create model and parameters
 	model = get_age_transformer(device, num_classes, age_interval, min_age, max_age, mid_feature_size)
-	# model = get_joined_model(device, num_classes, age_interval, min_age, max_age, mid_feature_size)
 
 	criterion_reg = nn.MSELoss().to(device)
 	criterion_cls = torch.nn.CrossEntropyLoss().to(device)
@@ -243,18 +173,15 @@ if __name__ == "__main__":
 		optimizer,
 		multiplier=1,
 		total_epoch=10000,
-		# total_epoch=5,
 		after_scheduler=cosine_scheduler
 	)
 
 	### Train ###
-	writer = SummaryWriter('logs/UTKFace/transformer/encoder/bin_1_layers_4_heads_4_1e3_batch_8_copies_10_mid_feature_size_1024_augs_at_val_imgsize_224_myloss_dropout_03_2fc_context_true_iter_warmup_10000_amp_batchnorm_after_encoder_iter_15e5_no_encoder_only_mean_RS')
-	# writer = None
+	writer = SummaryWriter('logs/train')
 
-	model_path = 'weights/UTKFace/transformer/encoder/bin_1_layers_4_heads_4_1e3_batch_8_copies_10_mid_feature_size_1024_augs_at_val_imgsize_224_myloss_dropout_03_2fc_context_true_iter_warmup_10000_amp_batchnorm_after_encoder_iter_15e5_no_encoder_only_mean_RS'
+	model_path = 'weights/'
 	if not os.path.exists(model_path):
 		os.makedirs(model_path)
-	# model_path = None
 
 	best_model = train_unified_model_iter(
 		model,
@@ -274,7 +201,5 @@ if __name__ == "__main__":
 
 	print('saving best model')
 
-	FINAL_MODEL_FILE = os.path.join(model_path, "weights.pt")
+	FINAL_MODEL_FILE = os.path.join(model_path, "age_estimator.pt")
 	torch.save(best_model.state_dict(), FINAL_MODEL_FILE)
-
-	print('fun fun in the sun, the training is done :)')

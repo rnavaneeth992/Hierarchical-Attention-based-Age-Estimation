@@ -59,8 +59,6 @@ def validate(model, val_data_loader, iter, device, criterion_reg, criterion_cls,
 		writer.add_scalar('Accuracy_+-1/val', epoch_p1_error, iter)
 		writer.add_scalar('Accuracy_+-2_and_above/val', epoch_p2_and_above_error, iter)
 
-	# writer.add_scalar('alpha', model.alpha.cpu().detach().numpy().squeeze(), iter)
-
 	print('{} Loss: {:.4f} mae: {:.4f}'.format('val', epoch_loss, epoch_mae))
 
 	return epoch_mae
@@ -102,9 +100,6 @@ def train_unified_model_iter(
 		print('Epoch {}/{}'.format(epoch, num_epochs - 1))
 		print('-' * 10)
 
-		# if epoch == 15:
-		# 	model.FreezeBaseCnn(False)
-
 		phase = 'train'
 		for batch in tqdm(data_loaders[phase]):
 			if iter % validate_at_k == 0 and iter != 0:
@@ -130,7 +125,6 @@ def train_unified_model_iter(
 
 				val_mae = validate(model, data_loaders['val'], iter, device, criterion_reg, criterion_cls, mean_var_criterion, dataset_sizes['val'], writer, use_cls_mean_var=use_cls_mean_var)
 
-				# deep copy the model
 				if val_mae < best_mae:
 					best_mae = val_mae
 					best_model_wts = copy.deepcopy(model.state_dict())
@@ -165,9 +159,6 @@ def train_unified_model_iter(
 					mean_loss, var_loss = mean_var_criterion(classification_logits, classification_labels)
 					loss += cls_loss + mean_loss + var_loss
 
-			# loss.backward()
-			# optimizer.step()
-
 			scaler.scale(loss).backward()
 			scaler.step(optimizer)
 			scaler.update()
@@ -181,7 +172,6 @@ def train_unified_model_iter(
 				running_p1_error += torch.sum(classification_offset == 1)
 				running_p2_and_above_error += torch.sum(classification_offset >= 2)
 
-			# scheduler.step(epoch_mae)
 			scheduler.step()
 
 
@@ -192,7 +182,6 @@ def train_unified_model_iter(
 		time_elapsed // 60, time_elapsed % 60))
 	print('Best val Mae: {:4f}'.format(best_mae))
 
-	# load best model weights
 	model.load_state_dict(best_model_wts)
 	return model
 

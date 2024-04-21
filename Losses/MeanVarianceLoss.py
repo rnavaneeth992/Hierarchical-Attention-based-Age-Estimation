@@ -21,11 +21,9 @@ class MeanVarianceLoss(nn.Module):
 
 		class_range = torch.arange(self.start_class, self.end_class, dtype=torch.float32).to(self.device)
 
-		# mean loss
 		mean = torch.squeeze((probas * class_range).sum(1, keepdim=True), dim=1)
 		mean_loss = nn.MSELoss().to(self.device)(mean, target)
 
-		# variance loss
 		var = (class_range[None, :] - mean[:, None]) ** 2
 		variance_loss = (probas * var).sum(1, keepdim=True).mean()
 
@@ -58,14 +56,10 @@ class keller_MeanVarianceLoss(nn.Module):
 
 		EstimatedMean = torch.mm(P,torch.unsqueeze(Labels,1))
 
-		#soft estimate per sample
 		LossMean = ((np.squeeze(EstimatedMean) - torch.squeeze(target).float()) ** 2)
 
-		#STD per sample
 		LossSTD = (  P*((Labels-EstimatedMean)**2)).sum(1)
 
 		Result = self.LamdaMean*sqrt(LossMean.mean()) + self.LamdaSTD*sqrt(LossSTD.mean())
-
-		#if self.reduction == 'mean':
 
 		return Result
