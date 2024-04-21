@@ -14,7 +14,7 @@ class JoinedTransformerModel(nn.Module):
 		self.labels = range(num_classes)
 
 		self.pretrained_model = UnifiedClassificaionAndRegressionAgeModel(num_classes, age_interval, min_age, max_age)
-		pretrained_model_path = 'weights/Morph2/unified/RangerLars_lr_5e4_4096_epochs_60_batch_32_mean_var_vgg16_pretrained_recognition_bin_10_more_augs_RandomApply_warmup_cosine_recreate'
+		pretrained_model_path = 'weights/UTKFace/unified/RangerLars_lr_5e4_4096_epochs_60_batch_32_mean_var_vgg16_pretrained_recognition_bin_10_more_augs_RandomApply_warmup_cosine_recreate'
 		pretrained_model_file = os.path.join(pretrained_model_path, "weights.pt")
 		self.pretrained_model.load_state_dict(torch.load(pretrained_model_file), strict=False)
 

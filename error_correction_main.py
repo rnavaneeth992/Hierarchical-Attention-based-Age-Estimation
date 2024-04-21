@@ -8,9 +8,9 @@ from torchvision import transforms, models
 from torch.optim import lr_scheduler
 from torch.utils.tensorboard import SummaryWriter
 
-from Datasets.AFAD.AFADRegressorDataset import AFADRegressorDataset
-from Datasets.Morph2.DataParser import DataParser
-from Datasets.Morph2.Morph2RegressorDataset import Morph2RegressorDataset
+from Datasets.UTKFace.UTKFaceRegressorDataset import UTKFaceRegressorDataset
+from Datasets.UTKFace.DataParser import DataParser
+from Datasets.UTKFace.UTKFaceRegressorDataset import UTKFaceRegressorDataset
 from Models.AgeClassifier import AgeClassifier
 from Optimizers.RangerLars import RangerLars
 from Training.train_error_correction_model import train_error_correction_model
@@ -29,8 +29,8 @@ num_classes = int(max_age / age_interval - min_age / age_interval + 1)
 
 # Load data
 
-# train_ds = AFADRegressorDataset(
-# 	'./Datasets/AFAD/aligned_data/afad_train.h5',
+# train_ds = UTKFaceRegressorDataset(
+# 	'./Datasets/UTKFace/aligned_data/UTKFace_train.h5',
 # 	min_age=min_age,
 # 	max_age=max_age,
 # 	age_interval=age_interval,
@@ -56,8 +56,8 @@ num_classes = int(max_age / age_interval - min_age / age_interval + 1)
 # 	])
 # )
 #
-# test_ds = AFADRegressorDataset(
-# 	'./Datasets/AFAD/aligned_data/afad_test.h5',
+# test_ds = UTKFaceRegressorDataset(
+# 	'./Datasets/UTKFace/aligned_data/UTKFace_test.h5',
 # 	min_age=min_age,
 # 	max_age=max_age,
 # 	age_interval=age_interval,
@@ -66,10 +66,10 @@ num_classes = int(max_age / age_interval - min_age / age_interval + 1)
 # 	])
 # )
 
-data_parser = DataParser('./Datasets/Morph2/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
+data_parser = DataParser('./Datasets/UTKFace/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
 data_parser.initialize_data()
 
-train_ds = Morph2RegressorDataset(
+train_ds = UTKFaceRegressorDataset(
 	data_parser.x_train,
 	data_parser.y_train,
 	min_age,
@@ -97,7 +97,7 @@ train_ds = Morph2RegressorDataset(
 	])
 )
 
-test_ds = Morph2RegressorDataset(
+test_ds = UTKFaceRegressorDataset(
 	data_parser.x_test,
 	data_parser.y_test,
 	min_age,
@@ -124,8 +124,8 @@ dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 # Create model and parameters
 
 classification_model_path = \
-	'weights/Morph2/mean_variance_loss/RangerLars_lr_1e3_weight_decay_1e5_augs/weights.pt'
-# 'weights/AFAD/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_256/weights.pt'
+	'weights/UTKFace/mean_variance_loss/RangerLars_lr_1e3_weight_decay_1e5_augs/weights.pt'
+# 'weights/UTKFace/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_256/weights.pt'
 # trained_classification_model = AgeClassifier(num_labels)
 trained_classification_model = models.resnet34()
 trained_classification_model.fc = torch.nn.Linear(trained_classification_model.fc.in_features, num_classes)
@@ -147,7 +147,7 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 # Train
 
 writer = SummaryWriter(
-	'logs/Morph2/error_correction/mean_variance/RangerLars_unfreeze_at_15_lr_5e3_weight_decay_1e5_steplr_10_01_256_dropout_even_more_augs_mean_extended_batchsize_64')
+	'logs/UTKFace/error_correction/mean_variance/RangerLars_unfreeze_at_15_lr_5e3_weight_decay_1e5_steplr_10_01_256_dropout_even_more_augs_mean_extended_batchsize_64')
 
 best_classification_model = train_error_correction_model(
 	multihead_regression_model,
@@ -166,7 +166,7 @@ best_classification_model = train_error_correction_model(
 print('saving best model')
 
 model_path = \
-	'weights/Morph2/error_correction/mean_variance/RangerLars_unfreeze_at_15_lr_5e3_weight_decay_1e5_steplr_10_01_256_dropout_even_more_augs_mean_extended_batchsize_64'
+	'weights/UTKFace/error_correction/mean_variance/RangerLars_unfreeze_at_15_lr_5e3_weight_decay_1e5_steplr_10_01_256_dropout_even_more_augs_mean_extended_batchsize_64'
 if not os.path.exists(model_path):
 	os.makedirs(model_path)
 FINAL_MODEL_FILE = os.path.join(model_path, "weights.pt")

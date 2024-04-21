@@ -9,9 +9,9 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 
-from Datasets.AFAD.AFADClassifierDataset import AFADClassifierDataset
-from Datasets.Morph2.DataParser import DataParser
-from Datasets.Morph2.Morph2ClassifierDataset import Morph2ClassifierDataset
+from Datasets.UTKFace.UTKFaceClassifierDataset import UTKFaceClassifierDataset
+from Datasets.UTKFace.DataParser import DataParser
+from Datasets.UTKFace.UTKFaceClassifierDataset import UTKFaceClassifierDataset
 from Losses.MeanVarianceLoss import MeanVarianceLoss
 from Models.JoinedTransformerModel import JoinedTransformerModel
 from Models.UnifiedClassificaionAndRegressionAgeModel import UnifiedClassificaionAndRegressionAgeModel
@@ -24,9 +24,9 @@ from Training.train_unified_model_iter import train_unified_model_iter
 
 def get_age_transformer(device, num_classes, age_interval, min_age, max_age, mid_feature_size):
 	pretrained_model = UnifiedClassificaionAndRegressionAgeModel(7, 10, 15, 80)
-	pretrained_model_path = 'weights/Morph2/unified/RangerLars_lr_5e4_4096_epochs_60_batch_32_mean_var_vgg16_pretrained_recognition_bin_10_more_augs_RandomApply_warmup_cosine_recreate'
+	pretrained_model_path = 'weights/UTKFace/unified/RangerLars_lr_5e4_4096_epochs_60_batch_32_mean_var_vgg16_pretrained_recognition_bin_10_more_augs_RandomApply_warmup_cosine_recreate'
 	# pretrained_model = UnifiedClassificaionAndRegressionAgeModel(4, 8, 12, 43)
-	# pretrained_model_path = 'weights/AFAD/unified/iter/RangerLars_lr_1e3_4096_epochs_60_batch_32_vgg16_warmup_10k_cosine_bin_8_stronger_augs_2'
+	# pretrained_model_path = 'weights/UTKFace/unified/iter/RangerLars_lr_1e3_4096_epochs_60_batch_32_vgg16_warmup_10k_cosine_bin_8_stronger_augs_2'
 
 	pretrained_model_file = os.path.join(pretrained_model_path, "weights.pt")
 	pretrained_model.load_state_dict(torch.load(pretrained_model_file), strict=False)
@@ -71,12 +71,14 @@ if __name__ == "__main__":
 
 	torch.backends.cudnn.benchmark = True
 
-	min_age = 15 #Morph
-	max_age = 80 #Morph
-	age_interval = 1 #Morph
-	# min_age = 12 #AFAD
-	# max_age = 43 #AFAD
-	# age_interval = 8  # AFAD
+	UTKFace
+
+	min_age = 1
+	max_age = 100
+	age_interval = 1 
+	# min_age = 12 
+	# max_age = 43 
+	# age_interval = 8  # UTKFace
 	batch_size = 8
 	# num_epochs = 60
 	num_iters = int(1.5e5)
@@ -87,7 +89,7 @@ if __name__ == "__main__":
 	num_classes = int((max_age - min_age) / age_interval + 1)
 
 	# Load data
-	data_parser = DataParser('./Datasets/Morph2/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
+	data_parser = DataParser('./Datasets/UTKFace/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
 	data_parser.initialize_data()
 
 	x_train, y_train, x_test, y_test = data_parser.x_train,	data_parser.y_train, data_parser.x_test, data_parser.y_test,
@@ -98,7 +100,7 @@ if __name__ == "__main__":
 
 		x_train, x_test, y_train, y_test = train_test_split(all_images, all_labels, test_size=0.20, random_state=42)
 
-	train_ds = Morph2ClassifierDataset(
+	train_ds = UTKFaceClassifierDataset(
 		x_train,
 		y_train,
 		min_age,
@@ -126,7 +128,7 @@ if __name__ == "__main__":
 		copies=num_copies
 	)
 
-	test_ds = Morph2ClassifierDataset(
+	test_ds = UTKFaceClassifierDataset(
 		x_test,
 		y_test,
 		min_age,
@@ -154,8 +156,8 @@ if __name__ == "__main__":
 		copies=num_copies
 	)
 
-	# train_ds = AFADClassifierDataset(
-	# './Datasets/AFAD/aligned_data/afad_train.h5',
+	# train_ds = UTKFaceClassifierDataset(
+	# './Datasets/UTKFace/aligned_data/UTKFace_train.h5',
 	# min_age=min_age,
 	# max_age=max_age,
 	# age_interval=age_interval,
@@ -182,8 +184,8 @@ if __name__ == "__main__":
 	# 	copies=num_copies
 	# )
 	#
-	# test_ds = AFADClassifierDataset(
-	# 	'./Datasets/AFAD/aligned_data/afad_test.h5',
+	# test_ds = UTKFaceClassifierDataset(
+	# 	'./Datasets/UTKFace/aligned_data/UTKFace_test.h5',
 	# 	min_age=min_age,
 	# 	max_age=max_age,
 	# 	age_interval=age_interval,
@@ -246,10 +248,10 @@ if __name__ == "__main__":
 	)
 
 	### Train ###
-	writer = SummaryWriter('logs/Morph2/transformer/encoder/bin_1_layers_4_heads_4_1e3_batch_8_copies_10_mid_feature_size_1024_augs_at_val_imgsize_224_myloss_dropout_03_2fc_context_true_iter_warmup_10000_amp_batchnorm_after_encoder_iter_15e5_no_encoder_only_mean_RS')
+	writer = SummaryWriter('logs/UTKFace/transformer/encoder/bin_1_layers_4_heads_4_1e3_batch_8_copies_10_mid_feature_size_1024_augs_at_val_imgsize_224_myloss_dropout_03_2fc_context_true_iter_warmup_10000_amp_batchnorm_after_encoder_iter_15e5_no_encoder_only_mean_RS')
 	# writer = None
 
-	model_path = 'weights/Morph2/transformer/encoder/bin_1_layers_4_heads_4_1e3_batch_8_copies_10_mid_feature_size_1024_augs_at_val_imgsize_224_myloss_dropout_03_2fc_context_true_iter_warmup_10000_amp_batchnorm_after_encoder_iter_15e5_no_encoder_only_mean_RS'
+	model_path = 'weights/UTKFace/transformer/encoder/bin_1_layers_4_heads_4_1e3_batch_8_copies_10_mid_feature_size_1024_augs_at_val_imgsize_224_myloss_dropout_03_2fc_context_true_iter_warmup_10000_amp_batchnorm_after_encoder_iter_15e5_no_encoder_only_mean_RS'
 	if not os.path.exists(model_path):
 		os.makedirs(model_path)
 	# model_path = None

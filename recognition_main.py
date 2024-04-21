@@ -11,8 +11,8 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 
-from Datasets.Morph2.DataParser import DataParser
-from Datasets.Morph2.Morph2RecognitionDataset import Morph2RecognitionDataset
+from Datasets.UTKFace.DataParser import DataParser
+from Datasets.UTKFace.UTKFaceRecognitionDataset import UTKFaceRecognitionDataset
 from Models.ArcMarginClassifier import ArcMarginClassifier
 from Optimizers.RangerLars import RangerLars
 from Training.train_recognition_model import train_recognition_model
@@ -24,14 +24,14 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 torch.cuda.empty_cache()
 
-data_parser = DataParser('./Datasets/Morph2/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
+data_parser = DataParser('./Datasets/UTKFace/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
 data_parser.initialize_data()
 
 ids = np.unique([json.loads(m)['id_num'] for m in data_parser.y_train])
 
 X_train, X_test, y_train, y_test = train_test_split(data_parser.x_train, data_parser.y_train, test_size=0.33, random_state=42)
 
-train_ds = Morph2RecognitionDataset(
+train_ds = UTKFaceRecognitionDataset(
 	X_train,
 	y_train,
 	ids,
@@ -57,7 +57,7 @@ train_ds = Morph2RecognitionDataset(
 	])
 )
 
-test_ds = Morph2RecognitionDataset(
+test_ds = UTKFaceRecognitionDataset(
 	X_test,
 	y_test,
 	ids,
@@ -91,7 +91,7 @@ scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
 ### Train ###
 
-writer = SummaryWriter('logs/Morph2_recognition/vgg16/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64')
+writer = SummaryWriter('logs/UTKFace_recognition/vgg16/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64')
 
 best_classification_model = train_recognition_model(
 	model,
@@ -107,7 +107,7 @@ best_classification_model = train_recognition_model(
 
 print('saving best model')
 
-model_path = 'weights/Morph2_recognition/vgg16/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64'
+model_path = 'weights/UTKFace_recognition/vgg16/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64'
 if not os.path.exists(model_path):
 	os.makedirs(model_path)
 FINAL_MODEL_FILE = os.path.join(model_path, "weights.pt")

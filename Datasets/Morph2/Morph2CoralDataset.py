@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
-class Morph2CoralDataset(Dataset):
+class UTKFaceCoralDataset(Dataset):
 	def __init__(self, images, metadata, num_classes, transform=None, min_age=15):
 		self.images = images[:, :, :, [2, 1, 0]]
 		self.metadata = metadata

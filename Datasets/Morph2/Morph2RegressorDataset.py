@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 
 
-class Morph2RegressorDataset(Dataset):
+class UTKFaceRegressorDataset(Dataset):
 	def __init__(self, images, metadata, min_age, age_interval, num_labels, transform=None):
 		self.images = images[:, :, :, [2, 1, 0]]
 		self.metadata = metadata

@@ -5,7 +5,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 
-class Morph2RecognitionDataset(Dataset):
+class UTKFaceRecognitionDataset(Dataset):
 	def __init__(self, images, metadata, ids, transform=None):
 		self.images = images[:, :, :, [2, 1, 0]]
 		self.metadata = metadata

@@ -10,8 +10,8 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
 
-from Datasets.Morph2.DataParser import DataParser
-from Datasets.Morph2.Morph2ClassifierDataset import Morph2ClassifierDataset
+from Datasets.UTKFace.DataParser import DataParser
+from Datasets.UTKFace.UTKFaceClassifierDataset import UTKFaceClassifierDataset
 from Models.JoinedTransformerModel import JoinedTransformerModel
 from Models.UnifiedClassificaionAndRegressionAgeModel import UnifiedClassificaionAndRegressionAgeModel
 
@@ -29,7 +29,7 @@ random_split = False
 num_classes = int((max_age - min_age) / age_interval + 1)
 
 # Load data
-data_parser = DataParser('./Datasets/Morph2/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
+data_parser = DataParser('./Datasets/UTKFace/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
 data_parser.initialize_data()
 
 x_train, y_train, x_test, y_test = data_parser.x_train,	data_parser.y_train, data_parser.x_test, data_parser.y_test,
@@ -39,7 +39,7 @@ if random_split:
 
 	x_train, x_test, y_train, y_test = train_test_split(all_images, all_labels, test_size=0.20, random_state=42)
 
-test_ds = Morph2ClassifierDataset(
+test_ds = UTKFaceClassifierDataset(
 	x_test,
 	y_test,
 	min_age,
@@ -74,7 +74,7 @@ tta = transforms.Compose([
 test_data_loader = DataLoader(test_ds, batch_size=batch_size, num_workers=0, shuffle=False, drop_last=True)
 
 pretrained_model = UnifiedClassificaionAndRegressionAgeModel(num_classes, age_interval, min_age, max_age)
-pretrained_model_path = 'weights/Morph2/unified/RangerLars_lr_5e4_4096_epochs_60_batch_32_mean_var_vgg16_pretrained_recognition_bin_10_more_augs_RandomApply_warmup_cosine_recreate'
+pretrained_model_path = 'weights/UTKFace/unified/RangerLars_lr_5e4_4096_epochs_60_batch_32_mean_var_vgg16_pretrained_recognition_bin_10_more_augs_RandomApply_warmup_cosine_recreate'
 pretrained_model_file = os.path.join(pretrained_model_path, "weights.pt")
 pretrained_model.load_state_dict(torch.load(pretrained_model_file), strict=False)
 pretrained_model.eval()

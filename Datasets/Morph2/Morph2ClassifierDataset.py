@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
-class Morph2ClassifierDataset(Dataset):
+class UTKFaceClassifierDataset(Dataset):
 	def __init__(self, images, metadata, min_age, age_interval, transform=None, copies=1):
 		self.images = images[:, :, :, [2, 1, 0]]
 		self.metadata = metadata

@@ -16,7 +16,7 @@ class FeatureExtractionResnet34(nn.Module):
 		self.base_net = models.resnet34(pretrained=True)
 
 		recog_model = ArcMarginClassifier(10976)
-		pretrained_model_path = 'weights/Morph2_recognition/resnet34/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64'
+		pretrained_model_path = 'weights/UTKFace_recognition/resnet34/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64'
 		pretrained_model_file = os.path.join(pretrained_model_path, "weights.pt")
 		recog_model.load_state_dict(torch.load(pretrained_model_file), strict=False)
 
@@ -46,7 +46,7 @@ class FeatureExtractionVgg16(nn.Module):
 		self.base_net = models.vgg16(pretrained=True)
 
 		recog_model = ArcMarginClassifier(10976)
-		pretrained_model_path = 'weights/Morph2_recognition/vgg16/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64'
+		pretrained_model_path = 'weights/UTKFace_recognition/vgg16/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_batchsize_64'
 		pretrained_model_file = os.path.join(pretrained_model_path, "weights.pt")
 		recog_model.load_state_dict(torch.load(pretrained_model_file), strict=False)
 

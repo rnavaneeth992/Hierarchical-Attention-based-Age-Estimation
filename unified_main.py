@@ -15,9 +15,9 @@ from torch.optim import lr_scheduler
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from Datasets.AFAD.AFADClassifierDataset import AFADClassifierDataset
-from Datasets.Morph2.DataParser import DataParser
-from Datasets.Morph2.Morph2ClassifierDataset import Morph2ClassifierDataset
+from Datasets.UTKFace.UTKFaceClassifierDataset import UTKFaceClassifierDataset
+from Datasets.UTKFace.DataParser import DataParser
+from Datasets.UTKFace.UTKFaceClassifierDataset import UTKFaceClassifierDataset
 from Losses.StubLoss import StubLoss
 from Models.UnifiedClassificaionAndRegressionAgeModel import UnifiedClassificaionAndRegressionAgeModel
 from Optimizers.RangerLars import RangerLars
@@ -40,9 +40,9 @@ if __name__ == "__main__":
 	min_age = 15 #Morph
 	max_age = 80 #Morph
 	age_interval = 1 #Morph
-	# min_age = 12 #AFAD
-	# max_age = 43 #AFAD
-	# age_interval = 8  # AFAD
+	# min_age = 12 #UTKFace
+	# max_age = 43 #UTKFace
+	# age_interval = 8  # UTKFace
 	batch_size = 32
 	# num_epochs = 60
 	num_iters = int(1.5e5)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 	# num_classes = 5
 
 	# Load data
-	data_parser = DataParser('./Datasets/Morph2/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
+	data_parser = DataParser('./Datasets/UTKFace/aligned_data/aligned_dataset_with_metadata_uint8.hdf5')
 	data_parser.initialize_data()
 
 	x_train, y_train, x_test, y_test = data_parser.x_train,	data_parser.y_train, data_parser.x_test, data_parser.y_test,
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
 		x_train, x_test, y_train, y_test = train_test_split(all_images, all_labels, test_size=0.20, random_state=42)
 
-	train_ds = Morph2ClassifierDataset(
+	train_ds = UTKFaceClassifierDataset(
 		x_train,
 		y_train,
 		min_age,
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 		])
 	)
 
-	test_ds = Morph2ClassifierDataset(
+	test_ds = UTKFaceClassifierDataset(
 		x_test,
 		y_test,
 		min_age,
@@ -101,8 +101,8 @@ if __name__ == "__main__":
 		])
 	)
 
-	# train_ds = AFADClassifierDataset(
-	# './Datasets/AFAD/aligned_data/afad_train.h5',
+	# train_ds = UTKFaceClassifierDataset(
+	# './Datasets/UTKFace/aligned_data/UTKFace_train.h5',
 	# min_age=min_age,
 	# max_age=max_age,
 	# age_interval=age_interval,
@@ -129,8 +129,8 @@ if __name__ == "__main__":
 	# 	copies=1
 	# )
 	#
-	# test_ds = AFADClassifierDataset(
-	# 	'./Datasets/AFAD/aligned_data/afad_test.h5',
+	# test_ds = UTKFaceClassifierDataset(
+	# 	'./Datasets/UTKFace/aligned_data/UTKFace_test.h5',
 	# 	min_age=min_age,
 	# 	max_age=max_age,
 	# 	age_interval=age_interval,
@@ -178,9 +178,9 @@ if __name__ == "__main__":
 	)
 
 	### Train ###
-	writer = SummaryWriter('logs/Morph2/unified/iter/RangerLars_lr_1e3_4096_epochs_60_batch_32_vgg16_warmup_10k_cosine_bin_1_2')
+	writer = SummaryWriter('logs/UTKFace/unified/iter/RangerLars_lr_1e3_4096_epochs_60_batch_32_vgg16_warmup_10k_cosine_bin_1_2')
 
-	model_path = 'weights/Morph2/unified/iter/RangerLars_lr_1e3_4096_epochs_60_batch_32_vgg16_warmup_10k_cosine_bin_1_2'
+	model_path = 'weights/UTKFace/unified/iter/RangerLars_lr_1e3_4096_epochs_60_batch_32_vgg16_warmup_10k_cosine_bin_1_2'
 	if not os.path.exists(model_path):
 		os.makedirs(model_path)
 

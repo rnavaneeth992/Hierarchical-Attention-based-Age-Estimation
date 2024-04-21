@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
-class Morph2_coral_Dataset(Dataset):
+class UTKFace_coral_Dataset(Dataset):
 	def __init__(self, hdf5_file_path, min_age, age_interval, transform=None):
 		file = h5py.File(hdf5_file_path, 'r')
 		self.images = file['images'].value

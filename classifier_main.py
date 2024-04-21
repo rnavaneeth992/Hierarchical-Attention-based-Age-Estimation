@@ -8,8 +8,8 @@ from torchvision import transforms
 from torch.optim import lr_scheduler
 from torch.utils.tensorboard import SummaryWriter
 
-from Datasets.AFAD.AFADClassifierDataset import AFADClassifierDataset
-from Datasets.Morph2.Morph2_coral_Dataset import Morph2_coral_Dataset
+from Datasets.UTKFace.UTKFaceClassifierDataset import UTKFaceClassifierDataset
+from Datasets.UTKFace.UTKFace_coral_Dataset import UTKFace_coral_Dataset
 from Models.AgeClassifier import AgeClassifier
 from Training.train_classification_model import train_classification_model
 from Optimizers.RangerLars import RangerLars
@@ -32,7 +32,7 @@ NumLabels = int(max_age / age_interval - min_age / age_interval + 1)
 # data_parser = DataParser()
 # data_parser.initialize_data()
 #
-# train_ds = Morph2ClassifierDataset(
+# train_ds = UTKFaceClassifierDataset(
 # 	data_parser.x_train,
 # 	data_parser.y_train,
 # 	MinAge,
@@ -46,7 +46,7 @@ NumLabels = int(max_age / age_interval - min_age / age_interval + 1)
 # 	])
 # )
 #
-# test_ds = Morph2ClassifierDataset(
+# test_ds = UTKFaceClassifierDataset(
 # 	data_parser.x_test,
 # 	data_parser.y_test,
 # 	MinAge,
@@ -58,8 +58,8 @@ NumLabels = int(max_age / age_interval - min_age / age_interval + 1)
 # )
 
 
-# train_ds = AFADClassifierDataset(
-# 	'./Datasets/AFAD/aligned_data/afad_train.h5',
+# train_ds = UTKFaceClassifierDataset(
+# 	'./Datasets/UTKFace/aligned_data/UTKFace_train.h5',
 # 	min_age=min_age,
 # 	max_age=max_age,
 # 	age_interval=age_interval,
@@ -71,8 +71,8 @@ NumLabels = int(max_age / age_interval - min_age / age_interval + 1)
 # 		transforms.ToTensor()
 # 	])
 # )
-# test_ds = AFADClassifierDataset(
-# 	'./Datasets/AFAD/aligned_data/afad_test.h5',
+# test_ds = UTKFaceClassifierDataset(
+# 	'./Datasets/UTKFace/aligned_data/UTKFace_test.h5',
 # 	min_age=min_age,
 # 	max_age=max_age,
 # 	age_interval=age_interval,
@@ -81,8 +81,8 @@ NumLabels = int(max_age / age_interval - min_age / age_interval + 1)
 # 	])
 # )
 
-train_ds = Morph2_coral_Dataset(
-	'./Datasets/Morph2/coral/coral_morph2_train.h5',
+train_ds = UTKFace_coral_Dataset(
+	'./Datasets/UTKFace/coral/coral_UTKFace_train.h5',
 	min_age,
 	age_interval,
 	transform=transforms.Compose([
@@ -94,8 +94,8 @@ train_ds = Morph2_coral_Dataset(
 	])
 )
 
-test_ds = Morph2_coral_Dataset(
-	'./Datasets/Morph2/coral/coral_morph2_test.h5',
+test_ds = UTKFace_coral_Dataset(
+	'./Datasets/UTKFace/coral/coral_UTKFace_test.h5',
 	min_age,
 	age_interval,
 	transform=transforms.Compose([
@@ -127,7 +127,7 @@ scheduler = lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
 ### Train ###
 
-writer = SummaryWriter('logs/Morph2_coral/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_256_epochs_70')
+writer = SummaryWriter('logs/UTKFace_coral/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_256_epochs_70')
 
 best_classification_model = train_classification_model(
 	classification_model,
@@ -143,7 +143,7 @@ best_classification_model = train_classification_model(
 
 print('saving best model')
 
-model_path = 'weights/Morph2_coral/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_256_epochs_70'
+model_path = 'weights/UTKFace_coral/RangerLars_unfreeze_at_15_lr_1e2_steplr_01_256_epochs_70'
 if not os.path.exists(model_path):
 	os.makedirs(model_path)
 FINAL_MODEL_FILE = os.path.join(model_path, "weights.pt")

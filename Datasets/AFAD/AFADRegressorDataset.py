@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 
 
-class AFADRegressorDataset(Dataset):
+class UTKFaceRegressorDataset(Dataset):
 	def __init__(self, hdf5_file_path, min_age=15, max_age=40, age_interval=5, transform=None):
 		file = h5py.File(hdf5_file_path, 'r')
 		self.images = file['images'].value
